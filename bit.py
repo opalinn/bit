@@ -88,7 +88,7 @@ def filter_fastq(
 
     """
 
-    def check_input_args(gc_bounds: int | tuple, length_bounds: int | tuple) -> tuple:
+    def transform_args(gc_bounds: int | tuple, length_bounds: int | tuple) -> tuple:
         """
         The helper function for filter_fastq().
         This function converts arguments to tuples
@@ -107,10 +107,13 @@ def filter_fastq(
             length_bounds = (0, length_bounds)
         return gc_bounds, length_bounds
 
-    gc_bounds, length_bounds = check_input_args(gc_bounds, length_bounds)
-    seqs_output = dict()
-    seqs_output = filter_by_quality(seqs, quality_threshold)
-    seqs_output = filter_by_length(seqs_output, length_bounds)
-    seqs_output = filter_by_gc_content(seqs_output, gc_bounds)
-    return seqs_output
+    output = filter_by_gc_content(
+        filter_by_length(
+            filter_by_quality(seqs, quality_threshold),
+            length_bounds
+        ),
+        gc_bounds
+    )
+    return output
+
 
