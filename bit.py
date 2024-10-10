@@ -106,7 +106,7 @@ def filter_fastq(
         if isinstance(length_bounds, int):
             length_bounds = (0, length_bounds)
         return gc_bounds, length_bounds
-
+    gc_bounds, length_bounds = transform_args(gc_bounds, length_bounds)    
     output = filter_by_gc_content(
         filter_by_length(
             filter_by_quality(seqs, quality_threshold),
