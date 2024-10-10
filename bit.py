@@ -47,19 +47,19 @@ def run_dna_rna_tools(*args: str) -> str | list:
                 lst_nucl_seq.append(seq)
             else:
                 lst_nucl_seq.append(None)
-        return do_operation(lst_nucl_seq)
+        return lst_nucl_seq
 
-    def do_operation(lst_nucl_seq):
-        if operation == "transcribe":
-            return transcribe(lst_nucl_seq)
-        elif operation == "reverse":
-            return reverse(lst_nucl_seq)
-        elif operation == "complement":
-            return complement(lst_nucl_seq)
-        elif operation == "reverse_complement":
-            return reverse_complement(lst_nucl_seq)
+    function_map = {
+        "transcribe": transcribe,
+        "reverse": reverse,
+        "complement": complement,
+        "reverse_complement": reverse_complement,
+    }
 
-    return check_input(lst_input)
+    res = function_map[operation](lst_nucl_seq)
+    if len(res) == 1:
+        return res[0]
+    return res
 
 
 def filter_fastq(
