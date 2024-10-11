@@ -29,14 +29,11 @@ def transcribe(lst_nucl_seq: str|list) -> str|list:
         else:
             seq = seq.replace("T", "U").replace("t", "u")
             lst_trscr_out.append(seq)
-    return lst_trscr_out if len(lst_trscr_out) > 1 else lst_trscr_out[0]
+    return lst_trscr_out
 
 
 def reverse(lst_nucl_seq: str|list) -> str|list:
-    lst_rev_out = []
-    for seq in range(len(lst_nucl_seq)):
-        lst_rev_out.append(lst_nucl_seq[seq][::-1])
-    return lst_rev_out if len(lst_rev_out) > 1 else lst_rev_out[0]
+    return [seq[::-1] for seq in lst_nucl_seq] 
 
 
 def complement(lst_nucl_seq: str|list) -> str|list:
@@ -51,7 +48,7 @@ def complement(lst_nucl_seq: str|list) -> str|list:
             for bp in seq:
                 complement_output += complement_dict_rna[bp]
             lst_compl_out.append(complement_output)
-    return lst_compl_out if len(lst_compl_out) > 1 else lst_compl_out[0]
+    return lst_compl_out
 
 
 def reverse_complement(lst_nucl_seq: str|list) -> str|list:
@@ -65,4 +62,4 @@ def reverse_complement(lst_nucl_seq: str|list) -> str|list:
             seq = seq[::-1]
             reverse_compl_out = "".join(complement_dict_rna[bp] for bp in seq)
             lst_revcom_out.append(reverse_compl_out)
-    return lst_revcom_out if len(lst_revcom_out) > 1 else lst_revcom_out[0]
+    return lst_revcom_out
