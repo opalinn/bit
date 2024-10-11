@@ -117,3 +117,7 @@ def filter_fastq(
     return output
 
 
+if __name__ == "__main__":
+    run_dna_rna_tools()
+    filter_fastq()
+    
