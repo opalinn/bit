@@ -1,10 +1,10 @@
-from .modules.run_dna_rna_tools import (
+from modules.dna_rna_tools import (
     transcribe,
     reverse,
     complement,
     reverse_complement,
 )
-from .modules.filter_fastq import (
+from modules.fastq_filtrator import (
     filter_by_quality,
     filter_by_length,
     filter_by_gc_content,
@@ -48,6 +48,8 @@ def run_dna_rna_tools(*args: str) -> str | list:
             else:
                 lst_nucl_seq.append(None)
         return lst_nucl_seq
+
+    lst_nucl_seq = check_input(lst_input)
 
     function_map = {
         "transcribe": transcribe,
@@ -99,20 +101,18 @@ def filter_fastq(
         - length_bounds (int | tuple)
 
         Returns:
-        tuples: gc_bounds and length_bounds
+        tuple: gc_bounds and length_bounds
         """
         if isinstance(gc_bounds, int):
             gc_bounds = (0, gc_bounds)
         if isinstance(length_bounds, int):
             length_bounds = (0, length_bounds)
         return gc_bounds, length_bounds
-    gc_bounds, length_bounds = transform_args(gc_bounds, length_bounds)    
+
+    gc_bounds, length_bounds = transform_args(gc_bounds, length_bounds)
     output = filter_by_gc_content(
-        filter_by_length(
-            filter_by_quality(seqs, quality_threshold),
-            length_bounds
-        ),
-        gc_bounds
+        filter_by_length(filter_by_quality(seqs, quality_threshold), length_bounds),
+        gc_bounds,
     )
     return output
 
@@ -120,4 +120,3 @@ def filter_fastq(
 if __name__ == "__main__":
     run_dna_rna_tools()
     filter_fastq()
-    
