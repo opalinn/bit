@@ -21,7 +21,7 @@ complement_dict_rna = {
 }
 
 
-def transcribe(lst_nucl_seq: str|list) -> str|list:
+def transcribe(lst_nucl_seq: str | list) -> str | list:
     lst_trscr_out = []
     for seq in lst_nucl_seq:
         if "U" in seq or "u" in seq:
@@ -32,11 +32,11 @@ def transcribe(lst_nucl_seq: str|list) -> str|list:
     return lst_trscr_out
 
 
-def reverse(lst_nucl_seq: str|list) -> str|list:
-    return [seq[::-1] for seq in lst_nucl_seq] 
+def reverse(lst_nucl_seq: str | list) -> str | list:
+    return [seq[::-1] for seq in lst_nucl_seq]
 
 
-def complement(lst_nucl_seq: str|list) -> str|list:
+def complement(lst_nucl_seq: str | list) -> str | list:
     lst_compl_out = []
     for seq in lst_nucl_seq:
         complement_output = ""
@@ -51,7 +51,7 @@ def complement(lst_nucl_seq: str|list) -> str|list:
     return lst_compl_out
 
 
-def reverse_complement(lst_nucl_seq: str|list) -> str|list:
+def reverse_complement(lst_nucl_seq: str | list) -> str | list:
     lst_revcom_out = []
     for seq in lst_nucl_seq:
         if set(seq) <= set("ATGCatgc"):
