@@ -8,6 +8,8 @@ BiT is a tool for researchers who need to quickly analyze the results of their w
 
 [Available functions](#available-functions)
 
+[Usage](#usage)
+
 [System requirements](#system-requirements)
 
 [Contacts](#contacts)
@@ -64,6 +66,18 @@ Filters sequences based on their length criteria.
 
 Filters sequences based on the percentage of G and C nucleotides.
 
+## Usage
+
+```
+import bit
+
+bit.run_dna_rna_tools('aaaGc', 'tTtTAccGc', 'complement') #['tttCg', 'aAaATggCg']
+```
+```
+from modules.dna_rna_tools import reverse
+
+reverse(['atgC', 'agag']) #['Cgta', 'gaga']
+```
 
 ## System requirements
 
