@@ -66,6 +66,25 @@ Filters sequences based on their length criteria.
 
 Filters sequences based on the percentage of G and C nucleotides.
 
+`convert_fastq`
+
+Converts the content .fastq file to a dictionary for filtering
+
+`write_output_file`
+
+Writes to a .fastq file filtered dictionary with sequences
+
+### `bio_files_processor`
+
+`convert_multiline_fasta_to_oneline`
+
+Makes one long string out of several short strings.
+
+`parse_blast_output`
+
+Searches in the file with BLAST output in the 'Description' column for the name of the first protein and writes it to a new file in alphabet order
+
+
 ## Usage
 
 ```
@@ -78,6 +97,16 @@ from modules.dna_rna_tools import reverse
 
 reverse(['atgC', 'agag']) #['Cgta', 'gaga']
 ```
+
+```
+convert_multiline_fasta_to_oneline(input_fasta, output_fasta)
+```
+
+```
+import bit
+bit.filter_fastq(input_fastq, output_fastq, gc_bounds, length_bounds, quality_threshold)
+```
+
 
 ## System requirements
 

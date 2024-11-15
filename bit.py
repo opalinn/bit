@@ -1,3 +1,6 @@
+import os
+from typing import TextIO
+
 from modules.dna_rna_tools import (
     transcribe,
     reverse,
@@ -65,28 +68,29 @@ def run_dna_rna_tools(*args: str) -> str | list:
 
 
 def filter_fastq(
-    seqs: dict,
+    input_fastq: str,
+    output_fastq: str,
     gc_bounds: int | tuple = (0, 100),
     length_bounds: int | tuple = (0, 2**32),
     quality_threshold: int = 0,
-) -> dict:
+) -> TextIO:
     """
-    The main function of the module filter_fastq.
-    This function takes arguments to filter fastq sequnces and return
-    filtered seqs.
+        The main function of the module filter_fastq.
+        This function takes arguments to filter fastq sequnces and return
+        filtered seqs.
 
-    Parameters:
-    - seqs (dict): contains names of sequences (keys, str) and sequence
-    with quality string (merged into tuple, values)
-    - gc_bounds (int|tuple): argument used to filter sequences by their
-    GC content, if int, it is converted to a tuple using check_input_args()
-    - lenght_bounds (int|tuple): argument used to filter sequences by
-    their length, if int, it is converted to a tuple using check_input_args()
-    - quality_threshold (int): the argument for filtering reads by quality
-    (the lower bound)
+        Parameters:
+        - input_fastq (str): path to .fastq file for filtering
+    - output_fastq (str): path to file with output
+        - gc_bounds (int|tuple): argument used to filter sequences by their
+        GC content, if int, it is converted to a tuple using check_input_args()
+        - lenght_bounds (int|tuple): argument used to filter sequences by
+        their length, if int, it is converted to a tuple using check_input_args()
+        - quality_threshold (int): the argument for filtering reads by quality
+        (the lower bound)
 
-    Returns:
-    dict: filtered sequences based on passed parameters
+        Returns:
+        TextIO: file with filtered sequences based on passed parameters
 
     """
 
@@ -110,11 +114,13 @@ def filter_fastq(
         return gc_bounds, length_bounds
 
     gc_bounds, length_bounds = transform_args(gc_bounds, length_bounds)
+    seqs = convert_fastq(input_fastq)
     output = filter_by_gc_content(
         filter_by_length(filter_by_quality(seqs, quality_threshold), length_bounds),
         gc_bounds,
     )
-    return output
+
+    return write_output_file(output_fastq, output)
 
 
 if __name__ == "__main__":
