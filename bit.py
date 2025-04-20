@@ -1,4 +1,6 @@
 import os
+import click
+import logging
 from abc import ABC, abstractmethod
 from typing import Self
 from Bio import SeqIO, SeqRecord, Seq
@@ -243,12 +245,36 @@ class AminoAcidSequence(BioSequenceFunctions):
         return counter
 
 
+logging.basicConfig(
+    filename="fastq_filtrator.log",
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(message)s",
+)
+
+logger = logging.getLogger()
+
+
+def make_bounds(bounds: str):
+    try:
+        return tuple(map(int, bounds.split(","))) if "," in bounds else (0, int(bounds))
+    except Exception:
+        raise click.BadParameter(
+            f"Invalid bounds format: '{bounds}'. Use 50 or two numbers like 30,60"
+        )
+
+
+@click.command()
+@click.argument("input_fastq", type=click.Path(exists=True))
+@click.argument("output_fastq", type=click.Path())
+@click.argument("gc_bounds", type=str)
+@click.argument("length_bounds", type=str)
+@click.argument("quality_threshold", type=int)
 def filter_fastq(
     input_fastq: str,
     output_fastq: str,
-    gc_bounds: int | tuple = (0, 100),
-    length_bounds: int | tuple = (0, 2**32),
-    quality_threshold: int = 0,
+    gc_bounds: str,
+    length_bounds: str,
+    quality_threshold: int,
 ):
     """
     Filters .fastq files by GC-content, lenght of reads and PHRED quality threshold
@@ -261,10 +287,10 @@ def filter_fastq(
     output_fastq : str
         Path to the output .fastq file
 
-    gc_bounds : int | tuple, default (0, 100)
+    gc_bounds : str
         Range of GC content (in percentage)
 
-    length_bounds : int | tuple, default (0, 2**32)
+    length_bounds : str
         Range of read length
 
     quality_threshold : int, default 0
@@ -273,26 +299,41 @@ def filter_fastq(
     Returns:
         None
     """
-    if isinstance(gc_bounds, int):
-        gc_bounds = (0, gc_bounds)
-    if isinstance(length_bounds, int):
-        length_bounds = (0, length_bounds)
+    try:
+        logger.info(
+            f"Start filtering with parameters: "
+            f"input_fastq={input_fastq}, output_fastq={output_fastq}, "
+            f"gc_bounds={gc_bounds}, length_bounds={length_bounds}, "
+            f"quality_threshold={quality_threshold}"
+        )
 
-    records = SeqIO.parse(input_fastq, "fastq")
+        gc_bounds = make_bounds(gc_bounds)
+        length_bounds = make_bounds(length_bounds)
 
-    filter_by_qual = (
-        record
-        for record in records
-        if min(record.letter_annotations["phred_quality"]) >= quality_threshold
-    )
-    filter_by_length = (
-        record
-        for record in filter_by_qual
-        if length_bounds[0] <= len(record.seq) <= length_bounds[1]
-    )
-    filter_by_gc = (
-        record
-        for record in filter_by_length
-        if gc_bounds[0] <= gc_fraction(record.seq) <= gc_bounds[1]
-    )
-    SeqIO.write(filter_by_gc, output_fastq, format="fastq")
+        records = SeqIO.parse(input_fastq, "fastq")
+
+        filter_by_qual = (
+            record
+            for record in records
+            if min(record.letter_annotations["phred_quality"]) >= quality_threshold
+        )
+        filter_by_length = (
+            record
+            for record in filter_by_qual
+            if length_bounds[0] <= len(record.seq) <= length_bounds[1]
+        )
+        filter_by_gc = (
+            record
+            for record in filter_by_length
+            if gc_bounds[0] <= gc_fraction(record.seq) * 100 <= gc_bounds[1]
+        )
+        SeqIO.write(filter_by_gc, output_fastq, format="fastq")
+        logger.info("Filtering completed successfully")
+
+    except Exception as error:
+        logger.error(f"Error during run fastq_filtrator.py: {error}")
+        raise click.ClickException(f"Error: {str(error)}")
+
+
+if __name__ == "__main__":
+    filter_fastq()
